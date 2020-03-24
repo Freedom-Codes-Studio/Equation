@@ -1,4 +1,42 @@
-import re
+import re,time
+
+def delete_split(string,begin,end):
+	# 用于删除给定字符串的一部分
+	string = string[:begin] + string[end:]
+	return string
+
+def find_element(string):
+	# 初始化一个列表，用于保存所有常量的索引
+	const_list = []
+	# 初始化一个列表，用于保存所有未知数的索引
+	x_list = []
+
+	# 常数的正则表达式
+	RegExp_const = r"(\+|-|\*|/)*\d+(\+|-|\*|/)*([^A-z0-9]|$)"
+	# 未知数的正则表达式
+	RegExp_x = r"(\+|-|\*|/)*\d*[A-z](\+|-|\*|/)*([^A-z0-9]|$)"
+
+	for const_string in re.finditer(RegExp_const,string):
+		const_span = list(const_string.span())
+		for i in [const_span[0],const_span[1]-1]:
+			if string[i]=='+' or string[i]=='-' or string[i]=='*' or string[i]=='/':
+				if i == const_span[0]:
+					const_span[0] += 1
+				else:
+					const_span[1] -= 1
+		const_list.append(const_span)
+
+	for x_string in re.finditer(RegExp_x,string):
+		x_span = list(x_string.span())
+		for i in [x_span[0],x_span[1]-1]:
+			if string[i]=='+' or string[i]=='-' or string[i]=='*' or string[i]=='/':
+				if i == x_span[0]:
+					x_span[0] += 1
+				else:
+					x_span[1] -= 1
+		x_list.append(x_span)
+
+	return {"const_list":const_list,"x_list":x_list}
 
 # 计算一个传入的字符串
 def count_string(string):
